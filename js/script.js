@@ -597,11 +597,11 @@ function clearLevel() {
         $("#whiteBox").addClass("anim_whiteBoxOut");
         if (game.currentLevel < game.levels.length - 1) {
             loadLevel(game.currentLevel + 1);
+            grid.on = true;
         } else {
             // Finished the set
             returnToMenu();
         }
-        grid.on = true;
     }, 1750);
 }
 
