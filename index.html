@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Logic Game</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="js/cipher.js"></script>
+    <script src="js/doubletap.js"></script>
+    <script src="js/resize.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/logic.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/graphics.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="stage" class="screen">
+        <div id="titleScreen" class="screenBox">
+            
+        </div>
+        <div id="menuScreen" class="screenBox">
+            <div id="menuBG">
+                <svg version="1.1" id="menusvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 400 300" xml:space="preserve">
+                </svg>
+            </div>
+            <div id="menuButtons"></div>
+            <div id="resetButton">
+                <div id="resetButtonText">Reset</div>
+            </div>
+        </div>
+        <div id="prepScreen" class="screenBox">
+            <div id="prepBG"></div>
+            <div id="prepNumber"></div>
+            <div id="prepTitle"></div>
+            <div id="prepClick">Click to Begin</div>
+        </div>
+        <div id="gameScreen" class="screenBox">
+            <div id="gridBG">
+                <svg version="1.1" id="gridsvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100%" height="100%" viewBox="0 0 400 300" xml:space="preserve">
+                </svg>
+            </div>
+            <div id="grid">
+                <div id="grayAreas"></div>
+                <div id="movable"></div>
+            </div>
+            <div id="statements">
+                <div id="statementBox"></div>
+            </div>
+            <div id="gameHeader">
+                <div id="gameTitle"><span id="gameLevelNumber"></span> <span id="gameLevelTitle"></span></div>
+                <div id="gameLevelButtonsBox">
+                    <div id="gameLevelButtons"></div>
+                </div>
+                <div id="gameReturnEsc">ESC</div>
+                <div id="gameReturn">Back to Menu</div>
+            </div>
+            <div id="gameFooter"></div>
+            <div id="grabDiv"></div>
+            <div id="whiteBox"></div>
+        </div>
+        <div id="gameClearBox">
+            <div class="gcColorBox">
+                <div id="gcText">Correct</div>
+                <div id="gcSubtext">Nicely done!</div>
+            </div>
+        </div>
+        <div id="winScreen" class="screenBox">
+            
+        </div>
+    </div>
+</body>
+
+</html>

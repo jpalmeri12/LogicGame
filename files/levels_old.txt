@@ -1,0 +1,108 @@
+!n intro
+!i 1-1
+!t First Steps
+!d 4
+!l
+!b b c 0 0, b c 0 3, b c 3 0, b c 3 3
+!g 1 1 2 2
+!s @x OnDark(x)
+!h pre Move the shapes so that the statement is true.
+!h post For all shapes x, x is on a dark square.
+!l
+!b g s 1 1, g s 1 2, g s 2 1, g s 2 2
+!g 1 1 2 2
+!s @x ~OnDark(x)
+!h pre ¬ is the negation operator.
+!h post For all shapes x, x is NOT on a dark square.
+!l
+!b r h 0 0, r h 0 3, r h 3 0, r h 3 3
+!g 1 1 2 2
+!s #x OnDark(x)
+!h pre ∃ means 'there exists'.
+!h post There is at least one shape x, such that x is on a dark square.
+!l
+!b r h 0 0, r h 0 3, b c 3 0, b c 3 3
+!g 1 1 2 2
+!s #x (Red(x)&OnDark(x))
+!h pre ∧ means 'and'. To be true, both sides of the operator must be true.
+!h post ...x is red AND x is on a dark square.
+!s #x (Blue(x)&OnDark(x))
+!h post Remember, you must satisfy both statements to win.
+!l
+!b g s 0 0, b c 0 3, b c 3 0, g s 3 3
+!g 1 1 2 2
+!s @x (Blue(x)|OnDark(x))
+!h pre ∨ means 'or'. To be true, at least one side of the operator must be true.
+!h post ...x is blue OR x is on a dark square.
+!s #x (Blue(x)&OnDark(x))
+!l
+!b r h 0 0, b c 1 1, r h 2 2, b c 3 3
+!g 1 1 2 2
+!s @x (Red(x)>OnDark(x))
+!h pre ⇒ means 'implies'. To be true, the right side must be true whenever the left side is true.
+!h post ...if x is red, then x is on a dark square.
+!s @x (Blue(x)>~OnDark(x))
+!l
+!b r h 1 1, r h 2 2, b c 0 1, b c 3 2, g s 1 0, g s 2 3
+!g 1 1 2 2
+!s @x (Blue(x)=OnDark(x))
+!h pre ⇔ means 'if and only if'. To be true, the left and right sides must be equivalent.
+!h post ...x is blue if and only if x is on a dark square.
+!e
+
+!n double_quant
+!i 1-2
+!t Seeing Double
+!d 5
+!l
+!b b c 1 1, r c 1 3, b h 3 1, r s 3 3, r s 2 2
+!s @x @y ((Red(x)&Blue(y))>Above(x,y))
+!h pre Multiple quantifiers (∀x ∀y) can be used in the same sentence.
+!h post For all x and y, if x is red and y is blue, then x is above y.
+!l
+!b r s 1 1, g c 2 1, b h 3 1, r s 1 3, g c 2 3, b h 3 3
+!s @x @y ((Red(x)&Blue(y))>Below(x,y))
+!s @x @y ((Green(x)&Blue(y))>Above(x,y))
+!l
+!b g h 1 1, b s 2 1, r s 3 1, g c 1 3, b c 2 3, r h 3 3
+!g 0 0 5 1
+!g 0 4 5 1
+!s @x @y (SameColor(x,y)>~Above(x,y))
+!s @x ~OnDark(x)
+!l
+!b b s 1 1, g s 2 1, r h 3 1, b h 1 3, g c 2 3, r c 3 3
+!s #x #y ((Red(x)&Green(y))&Adjacent(x,y))
+!s #x #y ((Blue(x)&Green(y))&Adjacent(x,y))
+!s @x @y (SameColor(x,y)>~Above(x,y))
+!l
+!b b s 1 1, r h 2 1, g c 3 1, r s 1 2, b c 3 2, g s 1 3, b h 2 3, r c 3 3
+!s @x @y (Above(x,y)>(Red(x)&~Red(y)))
+!s @x @y ((Blue(x)&Green(y))>LeftOf(x,y))
+!l
+!b r h 1 0, r s 0 3, r s 4 1, r s 3 4, b c 2 2
+!g 1 1 1 1
+!g 1 3 1 1
+!g 3 1 1 1
+!g 3 3 1 1
+!s @x @y ((Red(x)&~Red(y))>Adjacent(x,y))
+!s #x (Blue(x)&OnDark(x))
+!l
+!b b s 2 1, r s 1 2, g h 2 2, b c 3 2, r c 2 3
+!s @x @y (Above(x,y)=LeftOf(x,y))
+!s @x @y ((Red(x)&Blue(y))>RightOf(x,y))
+!s @x @y ((Red(x)&Green(y))>Below(x,y))
+!e
+
+!n mixed_quant
+!i 1-3
+!t One for All
+!d 5
+!l
+!b r c 2 3, g c 2 2, b c 2 1
+!s #x @y (Red(x)&~Below(x,y))
+!h pre Quantifiers can be mixed as well, here we have (∃x ∀y).
+!h post This reads: There exists an x such that for all y, x is red and x is not below y.
+!l
+!b b s 0 0, g s 0 2, r h 0 4, b h 4 0, g c 4 2, r c 4 4
+!s @x #y (Adjacent(x,y)&~SameColor(x,y))
+!e

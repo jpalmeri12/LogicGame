@@ -1,0 +1,58 @@
+Logic Game Level File Format
+
+Tags used: n, i, t, d, l, r, b, g, c, s, h, f, x, e
+
+!n <id>
+	Creates a new level set with the given string id (not shown to the player). So as not to interfere with data saving, these should be unique and not changed.
+	
+!i <id>
+	Assigns the level a numerical id. This can be changed to match the order of the levels in-game.
+	
+!t <title>
+	Assigns the level a title, which is shown in-game.
+	
+!d <dim>
+	Sets the dimensions of all levels in the set. Defaults to 7.
+
+!l
+	Creates a new level. Declarations for the new level end whenever !s is called again, or when !n is called to start a new level set.
+	
+!r <id> <x> <y> <w> <h>
+	Creates a new region. If no regions are created, it is assumed that there is one nameless region occupying the entire board. If at least one region is created, no shapes may be placed outside an existing region. Region IDs can be used in logical statements (e.g. for all x in A, ...)
+	id: The name of the region: A, B, C, etc. It's best to start with A and go in alphabetical order.
+	x, y: Coordinates of the top left square of the region.
+	w, h: The width and height of the region.
+	
+!b <color> <shape> <x> <y> [value] [type]
+	Adds a block with the specified properties. Add multiple blocks in the same line by delineating them with a comma and a space between each.
+	Colors: r, g, b, o, p, y (red, green, blue, orange, purple, yellow)
+	Shapes: c, s, h (circle, square, hexagon)
+	x, y: Must be between 0 and d-1 inclusive, where d is the dimension of the level.
+	Value: Optional. If specified, it must be a non-negative integer. If left blank, the shape will have no value.
+	Type: Optional. If specified, it must be a recognized block type to have special functionality. If left blank, it is assumed to be a normal block.
+	
+!g <x> <y> <w> <h>
+	Adds a new gray area to the level.
+	x, y: Coordinates of the top left square of the gray area.
+	w, h: The width and height of the gray area.
+	
+!c <color> <x> <y> <w> <h>
+	Adds a color area to the level. When a shape is placed in a color area, its color changes. When it is removed from the area, its color reverts back to normal.
+	Colors: r, g, b, o, p, y (red, green, blue, orange, purple, yellow)
+	x, y: Coordinates of the top left square of the color area.
+	w, h: The width and height of the color area.
+
+!s <statement>
+	Adds a new statement.
+	
+!h <pre/post> <text>
+	Adds help text before or after the last statement added to the level.
+
+!f <scale>
+	Scales the statement font size by the given amount.
+	
+!x <num>
+	Allows for <num> exceptions; that is, this many of the statements may be ignored and the level will still be solved.
+	
+!e
+	Ends the current level set. Optional but recommended.

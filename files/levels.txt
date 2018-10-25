@@ -1,0 +1,241 @@
+!n intro
+!i 1-1
+!t First Steps
+!d 4
+!l
+!b lbc 0 0, lbc 0 3, lbc 3 0, lbc 3 3
+!g 1 1 2 2
+!s @x OnDark(x)
+!h pre Move the shapes so that the statement is true.
+!h post For all shapes x, x is on a dark square.
+!l
+!b lgs 1 1, lgs 1 2, lgs 2 1, lgs 2 2
+!g 1 1 2 2
+!s @x ~OnDark(x)
+!h pre ¬ is the negation operator.
+!h post For all shapes x, x is NOT on a dark square.
+!l
+!b lrh 0 0, lrh 0 3, lrh 3 0, lrh 3 3
+!g 1 1 2 2
+!s #x OnDark(x)
+!h pre ∃ means 'there exists'.
+!h post There is at least one shape x, such that x is on a dark square.
+!l
+!b lrh 0 0, lrh 0 3, lbc 3 0, lbc 3 3
+!g 1 1 2 2
+!s #x (Red(x)&OnDark(x))
+!h pre ∧ means 'and'. To be true, both sides of the operator must be true.
+!h post ...x is red AND x is on a dark square.
+!s #x (Blue(x)&OnDark(x))
+!h post Remember, you must satisfy both statements to win.
+!l
+!b lgs 0 0, lbc 0 3, lbc 3 0, lgs 3 3
+!g 1 1 2 2
+!s @x (Blue(x)|OnDark(x))
+!h pre ∨ means 'or'. To be true, at least one side of the operator must be true.
+!h post ...x is blue OR x is on a dark square.
+!s #x (Blue(x)&OnDark(x))
+!l
+!b lrh 0 0, lbc 1 1, lrh 2 2, lbc 3 3
+!g 1 1 2 2
+!s @x (Red(x)>OnDark(x))
+!h pre ⇒ means 'implies'. To be true, the right side must be true whenever the left side is true.
+!h post ...if x is red, then x is on a dark square.
+!s @x (Blue(x)>~OnDark(x))
+!l
+!b lrh 1 1, lrh 2 2, lbc 0 1, lbc 3 2, lgs 1 0, lgs 2 3
+!g 1 1 2 2
+!s @x (Blue(x)=OnDark(x))
+!h pre ⇔ means 'if and only if'. To be true, the left and right sides must be equivalent.
+!h post ...x is blue if and only if x is on a dark square.
+!e
+
+!n double_quant
+!i 1-2
+!t Seeing Double
+!d 5
+!l
+!b lbc 1 1, lrc 1 3, lbh 3 1, lrs 3 3, lrs 2 2
+!s @x @y ((Red(x)&Blue(y))>Above(x,y))
+!h pre Multiple quantifiers (∀x ∀y) can be used in the same sentence.
+!h post For all x and y, if x is red and y is blue, then x is above y.
+!l
+!b lrs 1 1, lgc 2 1, lbh 3 1, lrs 1 3, lgc 2 3, lbh 3 3
+!s @x @y ((Red(x)&Blue(y))>Below(x,y))
+!s @x @y ((Green(x)&Blue(y))>Above(x,y))
+!l
+!b lgh 1 1, lbs 2 1, lrs 3 1, lgc 1 3, lbc 2 3, lrh 3 3
+!g 0 0 5 1
+!g 0 4 5 1
+!s @x @y (SameColor(x,y)>~Above(x,y))
+!s @x ~OnDark(x)
+!l
+!b lbs 1 1, lgs 2 1, lrh 3 1, lbh 1 3, lgc 2 3, lrc 3 3
+!s #x #y ((Red(x)&Green(y))&Adjacent(x,y))
+!s #x #y ((Blue(x)&Green(y))&Adjacent(x,y))
+!s @x @y (SameColor(x,y)>~Above(x,y))
+!l
+!b lbs 1 1, lrh 2 1, lgc 3 1, lrs 1 2, lbc 3 2, lgs 1 3, lbh 2 3, lrc 3 3
+!s @x @y (Above(x,y)>(Red(x)&~Red(y)))
+!s @x @y ((Blue(x)&Green(y))>LeftOf(x,y))
+!l
+!b lrh 1 0, lrs 0 3, lrs 4 1, lrs 3 4, lbc 2 2
+!g 1 1 1 1
+!g 1 3 1 1
+!g 3 1 1 1
+!g 3 3 1 1
+!s @x @y ((Red(x)&~Red(y))>Adjacent(x,y))
+!s #x (Blue(x)&OnDark(x))
+!l
+!b lbs 2 1, lrs 1 2, lgh 2 2, lbc 3 2, lrc 2 3
+!s @x @y (Above(x,y)=LeftOf(x,y))
+!s @x @y ((Red(x)&Blue(y))>RightOf(x,y))
+!s @x @y ((Red(x)&Green(y))>Below(x,y))
+!e
+
+!n mixed_quant
+!i 1-3
+!t One for All
+!d 5
+!l
+!b lrc 2 3, lgc 2 2, lbc 2 1
+!s #x @y (Red(x)&~Below(x,y))
+!h pre Quantifiers can be mixed as well, here we have (∃x ∀y).
+!h post This reads: There exists an x such that for all y, x is red and x is not below y.
+!l
+!b lbs 0 0, lgs 0 2, lrh 0 4, lbh 4 0, lgc 4 2, lrc 4 4
+!s @x #y (Adjacent(x,y)&~SameColor(x,y))
+!h pre Be careful: the quantifier (∃x ∀y) is not the same as (∀x ∃y).
+!h post This reads: For each x, there exists a y such that x and y are adjacent, and x and y are not the same color.
+!l
+!b sbs 1 1, mbs 1 2, sbs 1 3, mbs 2 1, lbs 2 2, mbs 2 3, sbs 3 1, mbs 3 2, sbs 3 3
+!s @x @y (Smaller(x,y)>Above(x,y))
+!s @x @y (Larger(x,y)>LeftOf(x,y))
+!l
+!b lrc 0 0, mrc 2 2, src 4 4, lgc 2 0, mgc 4 0, sgc 4 2, lbc 0 2, mbc 2 4, sbc 0 4
+!g 0 4 5 1
+!s @x @y @z ((Smaller(x,y)&Smaller(y,z))>OnDark(y))
+!s #x #y #z ((Adjacent(x,y)&Adjacent(y,z))&(Above(x,y)&Above(y,z)))
+!l 
+!b lbs 1 1, mrh 2 1, sgc 3 1, mrs 1 2, mbc 3 2, sgs 1 3, mbh 2 3, lrc 3 3
+!s @x @y ~Adjacent(x,y)
+!s @x @y (Below(x,y)>~Smaller(x,y))
+!s @x @y (RightOf(x,y)>~Smaller(x,y))
+!l
+!b lbs 3 1, mrc 2 1, lgs 1 1, mrc 1 2, mbc 3 2, lgs 3 3, mbc 2 3, lrs 1 3
+!g 0 0 1 1
+!g 0 4 1 1
+!g 4 0 1 1
+!g 4 3 1 1
+!s @x #y (SameColor(x,y)&OnDark(y))
+!s @x #y (Adjacent(x,y)&~SameSize(x,y))
+!s @x @y (Adjacent(x,y)>~SameSize(x,y))
+!s @x @y ((Red(x)&Blue(y))>Above(x,y))
+!s @x @y ((Blue(x)&Green(y))>Above(x,y))
+!l
+!b lrs 1 1, sbs 1 2, mbs 1 3, sbs 2 1, srs 2 2, mrs 2 3, mbs 3 1, mrs 3 2, mgs 3 3
+!g 2 2 1 1
+!s #x @y #z (Adjacent(x,y)|(Adjacent(x,z)&Adjacent(y,z)))
+!s @x @y ((Red(x)&Blue(y))>Above(x,y))
+!s @x @y ((Blue(x)&Green(y))>Above(x,y))
+!s @x @y (Smaller(x,y)=LeftOf(x,y))
+!s @x ~OnDark(x)
+!e
+
+!n exception
+!i 1-4
+!t Odd One Out
+!d 4
+!l
+!b lrc 1 1, lbc 1 2, lbc 2 1, lrc 2 2
+!s @x @y (Red(x)&Blue(y)>Above(x,y))
+!h pre These statements contradict. But that's fine!
+!s @x @y (Red(x)&Blue(y)>Below(x,y))
+!h pre For this level, satisfy all statements except 1.
+!x 1
+!l
+!b lrc 1 1, lbc 1 2, lbc 2 1, lrc 2 2, lgc 0 0, lgc 3 3
+!s @x #y SameColor(x,y)&Adjacent(x,y)
+!s #x @y SameColor(x,y)&Adjacent(x,y)
+!x 1
+!l
+!b lbc 0 0, lrc 1 0, lrc 2 0, lrc 1 3, lrc 2 3, lgc 3 3
+!s @x @y (Adjacent(x,y)>SameColor(x,y))
+!s @x OnDark(x)
+!s @x ~OnDark(x)
+!g 1 1 3 3
+!x 1
+!l
+!b lgs 0 0, lbc 1 0, lbs 2 0, lrc 3 0, lrs 0 1, lrc 3 1, lrs 0 2, lrc 3 2, lrs 0 3, lbc 1 3, lbs 2 3, lgc 3 3
+!s @x @y (Adjacent(x,y)>SameColor(x,y))
+!s @x @y (Adjacent(x,y)>SameShape(x,y))
+!x 1
+!l
+!b lgc 0 0, lbc 1 0, lbc 2 0, lrc 3 0, lrc 0 1, lrc 3 1, lrc 0 2, lrc 3 2, lrc 0 3, lbc 1 3, lbc 2 3, lgc 3 3
+!s @x @y ((Green(x)&Red(y))>Above(x,y))
+!s @x @y ((Blue(x)&Green(y))>Above(x,y))
+!s @x @y ((Red(x)&Blue(y))>Above(x,y))
+!s @x ~OnDark(x)
+!g 0 0 1 1
+!g 0 3 1 1
+!g 3 0 1 1
+!g 3 3 1 1
+!x 1
+!l
+!b lrc 0 0, lgc 1 0, lbc 2 0, lrc 3 0, lgc 0 1, lbc 3 1, lrc 0 2, lbc 3 2, lrc 0 3, lgc 1 3, lbc 2 3, lrc 3 3, lgc 1 1, lbc 1 2, lrc 2 1, lbc 2 2
+!s @x #y (Adjacent(x,y)&Red(y))
+!s @x #y (Adjacent(x,y)&Green(y))
+!s @x #y (Adjacent(x,y)&Blue(y))
+!x 1
+!l
+!f 0.8
+!b lrs 0 0, lrs 1 0, lgc 2 0, lbc 3 0, lrs 0 1, lrc 3 1, lgc 0 2, lbs 3 2, lbc 0 3, lrc 1 3, lbs 2 3, lgc 3 3, lgc 1 1, lbc 1 2, lbc 2 1, lrc 2 2
+!s @x @y ((Green(x)&~Red(y))>~Adjacent(x,y))
+!s @x @y ((Green(x)&~Blue(y))>~Adjacent(x,y))
+!s @x @y ((Red(x)&Square(x)&Adjacent(x,y))>SameColor(x,y))
+!s @x @y ((Blue(x)&Square(x)&Adjacent(x,y))>SameColor(x,y))
+!x 2
+!e
+
+!n circuits
+!i 1-5
+!t Chain Rules
+!d 4
+!l
+!f 0.8
+!b lbs 0 0, lbs 0 3, lbs 3 0, lbs 3 3
+!s @x #y #z ((Adjacent(x,y)&Adjacent(x,z))&~Equals(y,z))
+!l
+!f 0.8
+!b lbs 0 0, lbs 0 3, lbs 3 0, lbs 3 3, lrs 1 1, lrs 1 2, lrs 2 1, lrs 2 2
+!s @x #y #z ((Adjacent(x,y)&Adjacent(x,z))&~Equals(y,z))
+!s @x @y (Adjacent(x,y)>~SameColor(x,y))
+!l
+!f 0.8
+!b lbs 1 0, lbs 2 0, lbs 0 1, lbs 1 1, lrs 2 1, lrs 3 1, lrs 0 2, lrs 1 2, lgs 2 2, lgs 3 2, lgs 1 3, lgs 2 3
+!s @x #y #z ((Adjacent(x,y)&Adjacent(x,z))&~Equals(y,z))
+!s @x @y (Adjacent(x,y)>~SameColor(x,y))
+!s @x @y @z (((Adjacent(x,y)&Adjacent(x,z))&~Equals(y,z))>~SameColor(y,z))
+!l
+!f 0.8
+!b lbs 1 0, lbs 2 0, lbs 0 1, lbs 1 1, lrs 2 1, lrs 3 1, lrs 0 2, lrs 1 2, lgs 2 2, lgs 3 2, lgs 1 3, lgs 2 3
+!s @x #y #z ((Adjacent(x,y)&Adjacent(x,z))&~Equals(y,z))
+!s @x @y (SameRow(x,y)>(~SameColor(x,y)|Equals(x,y)))
+!s @x @y (SameColumn(x,y)>(~SameColor(x,y)|Equals(x,y)))
+!l
+!f 0.8
+!b lbs 1 0, lbs 2 0, lbs 0 1, lbc 1 1, lrc 2 1, lrc 3 1, lrc 0 2, lrh 1 2, lgh 2 2, lgh 3 2, lgh 1 3, lgs 2 3
+!s @x @y (Adjacent(x,y)>(SameColor(x,y)|SameShape(x,y)))
+!l
+!f 0.8
+!b sbh 1 0, mgs 2 0, sbc 0 1, mbs 1 1, lrh 2 1, src 3 1, sgs 0 2, mbc 1 2, sgh 2 2, lgs 3 2, srh 1 3, lrc 2 3
+!s @x @y ((Adjacent(x,y)&~SameColor(x,y))>(SameShape(x,y)&SameSize(x,y)))
+!s @x @y ((Adjacent(x,y)&~SameShape(x,y))>(SameSize(x,y)&SameColor(x,y)))
+!s @x @y ((Adjacent(x,y)&~SameSize(x,y))>(SameColor(x,y)&SameShape(x,y)))
+!l
+!f 0.8
+!b srh 0 0, lbs 1 0, lgc 2 0, sbs 0 1, sgc 1 1, mgh 2 1, sgs 3 1, lgs 0 2, mgc 1 2, sgh 2 2, sbc 3 2, mrh 1 3, sbh 2 3, mgs 3 3
+!s @x @y ((Adjacent(x,y)&~SameColor(x,y))>(SameShape(x,y)&SameSize(x,y)))
+!s @x @y ((Adjacent(x,y)&~SameShape(x,y))>(SameSize(x,y)&SameColor(x,y)))
+!s @x @y ((Adjacent(x,y)&~SameSize(x,y))>(SameColor(x,y)&SameShape(x,y)))
+!e
