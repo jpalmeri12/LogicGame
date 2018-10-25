@@ -221,6 +221,17 @@ input {
     transform: translateY(-50%);
 }
 
+#version {
+    width: 4.9rem;
+    top: 14.4rem;
+    left: 15rem;
+    position: absolute;
+    text-align: right;
+    font-family: "FuturaDemi";
+    color: #c0c0c0;
+    font-size: .5rem;
+}
+
 #prepBG {
     width: 100%;
     height: 100%;
