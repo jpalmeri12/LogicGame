@@ -1,4 +1,4 @@
-var editMode = true;
+var editMode = false;
 var editString = "";
 var editTool = 0;
 var movedSinceTyped = false;
