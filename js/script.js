@@ -44,8 +44,8 @@ var blockSizeWords = ["small", "medium", "large"];
 
 var levels = [];
 
-var debug = true;
-var unlockAll = true;
+var debug = false;
+var unlockAll = false;
 
 var parts = {
     1: {
