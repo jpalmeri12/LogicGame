@@ -434,6 +434,7 @@ input {
 }
 
 #statementBox {
+    width: 8.5rem;
     top: 50%;
     position: absolute;
     transform: translateY(-50%);
@@ -550,69 +551,72 @@ input {
     height: 4rem;
     top: 5.5rem;
     position: absolute;
-    background-color: rgba(0, 179, 89, .9);
+    background-color: rgba(0, 0, 0, .75);
     z-index: 10;
     opacity: 0;
 }
 
-#gcText {
+#gameClearText {
     width: 100%;
-    top: 35%;
+    top: 50%;
     text-align: center;
     position: absolute;
     font-family: "FuturaDemi";
     text-transform: uppercase;
-    transform: translateY(-50%);
-    color: white;
+    color: rgb(0, 179, 89);
     font-size: 2rem;
-}
-
-#gcSubtext {
-    width: 100%;
-    top: 77.5%;
-    text-align: center;
-    position: absolute;
-    font-family: "Logic";
-    transform: translateY(-50%);
-    color: white;
-    font-size: .75rem;
+    pointer-events: none;
+    opacity: 0;
 }
 
 .anim_gameClearIn {
-    animation: gameClearIn .125s linear normal forwards;
+    animation: gameClearIn 1s linear normal forwards;
 }
 
 @keyframes gameClearIn {
-    from {
+    0% {
         opacity: 1;
-        transform: rotateX(90deg);
+        transform: translateY(-50%) rotateX(90deg);
     }
-    to {
+    12.5% {
         opacity: 1;
-        transform: rotateX(0deg);
+        transform: translateY(-50%) rotateX(0deg);
+        top: 50%;
+    }
+    87.5% {
+        opacity: 1;
+        transform: translateY(-50%) rotateX(0deg);
+        top: 50%;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) rotateX(0deg) scale(.5);
+        top: 106%;
     }
 }
 
-.anim_gameClearOut {
-    animation: gameClearOut .125s linear normal forwards;
+.anim_gameClearInstant {
+    animation: gameClearInstant .125s linear normal forwards;
 }
 
-@keyframes gameClearOut {
-    from {
+@keyframes gameClearInstant {
+    0% {
         opacity: 1;
-        transform: rotateX(0deg);
+        transform: translateY(-50%) rotateX(90deg) scale(.5);
+        top: 106%;
     }
-    to {
+    100% {
         opacity: 1;
-        transform: rotateX(90deg);
+        transform: translateY(-50%) rotateX(0deg) scale(.5);
+        top: 106%;
     }
 }
 
 #whiteBox {
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
+    width: 112.5%;
+    height: 200%;
+    left: -10%;
+    top: -50%;
     position: absolute;
     background-color: white;
     opacity: 0;
@@ -628,7 +632,7 @@ input {
         opacity: 0;
     }
     to {
-        opacity: .75;
+        opacity: .85;
     }
 }
 
@@ -638,9 +642,63 @@ input {
 
 @keyframes whiteBoxOut {
     from {
-        opacity: .75;
+        opacity: .85;
     }
     to {
         opacity: 0;
     }
+}
+
+#clickToContinueText {
+    width: 100%;
+    top: 14.5rem;
+    position: absolute;
+    text-align: center;
+    transform: translateY(-50%);
+    font-size: .5rem;
+    font-family: "FuturaDemi";
+    text-transform: uppercase;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.anim_ctcIn {
+    animation: ctcIn .5s infinite linear alternate forwards;
+}
+
+@keyframes ctcIn {
+    0% {
+        opacity: .25;
+        transform: translateY(-50%);
+    }
+    100% {
+        opacity: .75;
+        transform: translateY(-50%);
+    }
+}
+
+#editPanel {
+    width: 19rem;
+    left: .5rem;
+    top: 14.5rem;
+    position: absolute;
+    text-align: left;
+    transform: translateY(-50%);
+    font-size: .5rem;
+    font-family: "Logic";
+    pointer-events: none;
+    opacity: 0;
+}
+
+#editModeDisplay {
+    width: 19rem;
+    left: .5rem;
+    top: 14.5rem;
+    position: absolute;
+    text-align: right;
+    transform: translateY(-50%);
+    font-size: .5rem;
+    font-family: "Logic";
+    pointer-events: none;
+    opacity: 0;
 }

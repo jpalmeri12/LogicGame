@@ -103,7 +103,7 @@ function processLevels(data) {
         }
         // Flag !h: Adds help text to the last statement added to the level.
         if (flag == "!h") {
-            hp = params.split(" ");
+            var hp = params.split(" ");
             var type = hp[0];
             var text = hp.slice(1).join(" ");
             var lastStatement = level.statements[level.statements.length - 1];
@@ -121,6 +121,21 @@ function processLevels(data) {
         // Flag !x: Sets exception numbers
         if (flag == "!x") {
             level.exceptions = parseFloat(params);
+        }
+        // Flag !r: Makes a new region (domain)
+        if (flag == "!r") {
+            var rp = params.split(" ");
+            level.domains.push({
+                name: rp[0],
+                x: parseInt(rp[1]),
+                y: parseInt(rp[2]),
+                w: parseInt(rp[3]),
+                h: parseInt(rp[4])
+            });
+        }
+        // Flag !r: Marks level as not having a universal set
+        if (flag == "!R") {
+            level.hasUniversal = false;
         }
         // Flag !e: End the current level set and add it to the list.
         if (flag == "!e") {
@@ -160,6 +175,7 @@ function newLevel() {
         colorAreas: [],
         statements: [],
         scale: 1,
-        exceptions: 0
+        exceptions: 0,
+        hasUniversal: true
     }
 }

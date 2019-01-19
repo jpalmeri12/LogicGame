@@ -47,3 +47,13 @@ function leftpad(str, len, ch) {
     }
     return str;
 }
+
+function findKey(arr, val) {
+    for (var i=0; i<Object.keys(arr).length; i++) {
+        var k = Object.keys(arr)[i];
+        if (arr[k] == val) {
+            return k;
+        }
+    }
+    return -1;
+}

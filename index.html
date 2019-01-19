@@ -13,13 +13,14 @@
     <script src="js/logic.js"></script>
     <script src="js/loader.js"></script>
     <script src="js/graphics.js"></script>
+    <script src="js/editor.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div id="stage" class="screen">
         <div id="titleScreen" class="screenBox">
-            
+
         </div>
         <div id="menuScreen" class="screenBox">
             <div id="menuBG">
@@ -30,7 +31,7 @@
             <div id="resetButton">
                 <div id="resetButtonText">Reset</div>
             </div>
-            <div id="version">alpha 0.0.1</div>
+            <div id="version">alpha 0.1.0</div>
         </div>
         <div id="prepScreen" class="screenBox">
             <div id="prepBG"></div>
@@ -46,6 +47,8 @@
             <div id="grid">
                 <div id="grayAreas"></div>
                 <div id="movable"></div>
+                <div id="whiteBox"></div>
+                <div id="gameClearText">Correct</div>
             </div>
             <div id="statements">
                 <div id="statementBox"></div>
@@ -55,21 +58,20 @@
                 <div id="gameLevelButtonsBox">
                     <div id="gameLevelButtons"></div>
                 </div>
-                <div id="gameReturnEsc">ESC</div>
-                <div id="gameReturn">Back to Menu</div>
+                <div id="gameReturnBox">
+                    <div id="gameReturnEsc">ESC</div>
+                    <div id="gameReturn">Back to Menu</div>
+                </div>
             </div>
             <div id="gameFooter"></div>
             <div id="grabDiv"></div>
-            <div id="whiteBox"></div>
+            <div id="clickToContinueText">Click to Continue</div>
+            <div id="editPanel"><span>code: </span><span id="editInsertText"></span></div>
+            <div id="editModeDisplay"></div>
         </div>
-        <div id="gameClearBox">
-            <div class="gcColorBox">
-                <div id="gcText">Correct</div>
-                <div id="gcSubtext">Nicely done!</div>
-            </div>
-        </div>
+        
         <div id="winScreen" class="screenBox">
-            
+
         </div>
     </div>
 </body>

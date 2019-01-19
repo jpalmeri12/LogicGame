@@ -14,7 +14,9 @@ var grid = {
         id: -1
     },
     statements: [],
-    gray: []
+    gray: [],
+    cleared: false,
+    canContinue: false
 };
 
 var colors = {
@@ -26,9 +28,24 @@ var colors = {
     "yellow": "#ffff66"
 };
 
+var domainColors = {
+    "A": "#404040",
+    "B": "#404040",
+    "C": "#404040",
+    "D": "#404040",
+    "E": "#404040",
+    "F": "#404040",
+    "G": "#404040",
+    "H": "#404040",
+    "I": "#404040",
+}
+
 var blockSizeWords = ["small", "medium", "large"];
 
 var levels = [];
+
+var debug = true;
+var unlockAll = true;
 
 var parts = {
     1: {
@@ -68,6 +85,8 @@ var progress = {};
 var currentUser = "user";
 var clearedLevels = 0;
 
+var levelStates = {};
+
 $(function () {
     loadLevelsFromFile("files/levels.txt");
 });
@@ -75,13 +94,17 @@ $(function () {
 function continueLoading() {
     loadGame();
     initControls();
+    initEditor();
     makeMenuGraphic();
     //showScreen("prepScreen");
-    returnToMenu();
-    console.log(allLevelSets);
+    returnToMenu(false);
 }
 
-function returnToMenu() {
+// Returns to menu. If doSave is true, it will save the current level state.
+function returnToMenu(doSave) {
+    if (doSave) {
+        saveLevelState();
+    }
     clearedLevels = getClearedLevelCount();
     makeMenuButtons();
     showScreen("menuScreen");
@@ -103,22 +126,23 @@ function makeMenuButtons() {
         var id = nmID.split("-");
         var world = id[0];
         var lv = id[1];
-        // Check to see if a new row should be appended.
-        if (world > lastRowID) {
-            lastRowID = world;
-            var lastRowBox = $('<div class="menuRowBox"></div>');
-            lastRow = $('<div class="menuRow menuBG' + world + '"></div>');
-            lastRowBox.append('<div class="menuRowTag menuBG' + world + '"><div class="menuRowTagText1">Part ' + world + '</div></div>');
-            lastRowBox.append(lastRow);
-            lastRowBox.append('<div class="menuRowTag menuBG' + world + '"><div class="menuRowTagText2">' + parts[world].name + '</div></div>');
-            $("#menuButtons").append(lastRowBox);
-        }
         // Append the button if it's unlocked.
-        if (clearedLevels >= 6 * (lv - 1)) {
+        var req = (world - 1) * 30 + (lv - 1) * 6;
+        if (clearedLevels >= req || unlockAll) {
+            // But first check to see if a new row should be appended.
+            if (world > lastRowID) {
+                lastRowID = world;
+                var lastRowBox = $('<div class="menuRowBox"></div>');
+                lastRow = $('<div class="menuRow menuBG' + world + '"></div>');
+                lastRowBox.append('<div class="menuRowTag menuBG' + world + '"><div class="menuRowTagText1">Part ' + world + '</div></div>');
+                lastRowBox.append(lastRow);
+                lastRowBox.append('<div class="menuRowTag menuBG' + world + '"><div class="menuRowTagText2">' + parts[world].name + '</div></div>');
+                $("#menuButtons").append(lastRowBox);
+            }
+            // Then append the button.
             var newButton = $('<div id="menuButton' + nmID + '" class="menuButton"></div>');
             newButton.append('<div class="menuButtonText">' + nmID + '</div>');
             var progress = getUserProgress(currentUser, ls.internalID);
-            console.log(progress);
             var progString = "★ " + ls.levels.length;
             if (!progress.cleared) {
                 progString = progress.progress + " / " + ls.levels.length;
@@ -137,7 +161,6 @@ function makeMenuButtons() {
 
 function initMenuClick(nmID) {
     $("#menuButton" + nmID).click(function () {
-        console.log("Trying to load level " + nmID);
         loadLevelFromNumID(nmID, 0);
         showScreen("prepScreen");
     });
@@ -202,7 +225,7 @@ function updateLevelSetButtons() {
     for (var i = 0; i <= game.levels.length; i++) {
         var lvButton = $("#gameLevelButton" + i);
         var lvButtonText = $("#gameLevelButton" + i + ">.gameLevelButtonNum");
-        if (pr >= i) {
+        if (pr >= i || unlockAll) {
             lvButton.removeClass("gameLevelButtonShrink");
             lvButtonText.text(i + 1);
         } else {
@@ -216,7 +239,8 @@ function initLvSetClick(n) {
     $("#gameLevelButton" + n).click(function () {
         var userProgress = getUserProgress(currentUser, game.internalID);
         var pr = userProgress.progress;
-        if (grid.on && pr >= n) {
+        if (grid.on && (pr >= n || unlockAll)) {
+            saveLevelState();
             loadLevel(n);
             grid.on = true;
         }
@@ -229,19 +253,31 @@ function loadLevel(id) {
     // Update buttons
     $(".gameLevelButton").removeClass("gameLevelButtonSelected");
     $("#gameLevelButton" + id).addClass("gameLevelButtonSelected");
+    // Clear the "correct" animation
+    $("#gameClearText").removeClass("anim_gameClearIn");
+    $("#gameClearText").removeClass("anim_gameClearInstant");
+    $("#clickToContinueText").removeClass("anim_ctcIn");
     // Reset the grid and set it to the proper dimensions
     grid = resetGrid();
-    setGrid(200, game.dim);
+    setGrid(200, game);
     var lv = game.levels[game.currentLevel];
-    grid.obj = jsonClone(lv.obj);
+    var savedState = loadLevelState();
+    if (savedState) {
+        grid.obj = savedState.obj;
+        grid.cleared = savedState.cleared;
+    } else {
+        grid.obj = jsonClone(lv.obj);
+        grid.cleared = false;
+    }
     grid.gray = jsonClone(lv.gray);
+    grid.domains = jsonClone(lv.domains);
     grid.statements = jsonClone(lv.statements);
     grid.scale = lv.scale;
     grid.exceptions = lv.exceptions;
-    makeLevelObjects();
+    grid.hasUniversal = lv.hasUniversal;
     makeStatementDivs();
+    makeLevelObjects();
     updateLevelSetButtons();
-    evaluateWorld();
 }
 
 function makeLevelObjects() {
@@ -291,6 +327,7 @@ function makeLevelObjects() {
     });
     // Update
     updateGrid();
+    evaluateWorld();
 }
 
 // Initializes some controls.
@@ -303,16 +340,11 @@ function initControls() {
     });
     $(window).keyup(function (evt) {
         if (evt.keyCode == 27) {
-            if (grid) {
-                if (grid.on) {
-                    grid.on = false;
-                    returnToMenu();
-                }
-            }
+            tryReturnToMenu();
         }
-        if (evt.keyCode == 67) {
-            //clearLevel();
-        }
+        //        if (evt.keyCode == 67 && debug) {
+        //            //clearLevel();
+        //        }
     });
     $("#prepScreen").click(function () {
         grid.on = true;
@@ -321,6 +353,26 @@ function initControls() {
     $("#resetButton").click(function () {
         resetUser(currentUser);
     });
+    $("#gameReturnBox").click(function () {
+        tryReturnToMenu();
+    });
+    $("#gameScreen").click(function () {
+        if (grid) {
+            if (grid.canContinue) {
+                nextLevel();
+            }
+        }
+    });
+}
+
+// Returns the user to the menu if possible.
+function tryReturnToMenu() {
+    if (grid) {
+        if (grid.on) {
+            grid.on = false;
+            returnToMenu(true);
+        }
+    }
 }
 
 // Initializes block clicks after they are added to the DOM.
@@ -336,14 +388,22 @@ function startDrag(evt) {
     var id = $(target).data("id");
     if (grid) {
         if (grid.on) {
-            grid.ctrl.drag = true;
-            grid.ctrl.id = id;
-            $("#grabDiv").css("opacity", 1);
-            var grabbed = grid.obj[grid.ctrl.id].div;
-            $("#grabDiv").html($(grabbed[0]).html());
-            refreshElement($("#grabDiv"));
-            updateGrid();
-            updateDrag(evt);
+            if (editMode && editTool == 2) {
+                grid.obj.splice(id, 1);
+                makeLevelObjects();
+            } else {
+                if (isInSet(grid.obj[id], grid)) {
+                    grid.ctrl.drag = true;
+                    grid.ctrl.id = id;
+                    $("#grabDiv").css("opacity", 1);
+                    var grabbed = grid.obj[grid.ctrl.id].div;
+                    $("#grabDiv").html($(grabbed[0]).html());
+                    refreshElement($("#grabDiv"));
+                    updateGrid();
+                    updateDrag(evt);
+                }
+            }
+
         }
     }
 }
@@ -374,18 +434,21 @@ function endDrag(evt) {
                 // Get the coordinates the drop location
                 var coords = getGridMousePos(evt);
                 if (coords.ok) {
-                    // Coordinates are ok, check to see if there's an object in the drop location
-                    var i = grid.obj.findIndex(function (a) {
-                        return a.x == coords.x && a.y == coords.y
-                    });
-                    if (i !== -1) {
-                        // Index is not -1; there is an object we have to swap with.
-                        var o2 = grid.obj[i];
-                        o2.x = o.x;
-                        o2.y = o.y;
+                    // Coordinates are within bounds, check to see if it's being dropped in a set
+                    if (isInSet(coords, grid)) {
+                        // It's in a set, check to see if there's an object in the drop location
+                        var i = grid.obj.findIndex(function (a) {
+                            return a.x == coords.x && a.y == coords.y
+                        });
+                        if (i !== -1) {
+                            // Index is not -1; there is an object we have to swap with.
+                            var o2 = grid.obj[i];
+                            o2.x = o.x;
+                            o2.y = o.y;
+                        }
+                        o.x = coords.x;
+                        o.y = coords.y;
                     }
-                    o.x = coords.x;
-                    o.y = coords.y;
                 }
             }
             grid.ctrl.drag = false;
@@ -397,6 +460,20 @@ function endDrag(evt) {
             evaluateWorld();
         }
     }
+}
+
+function isInSet(coords, grid) {
+    var inSet = false;
+    if (grid.hasUniversal) {
+        inSet = true;
+    } else {
+        for (var i = 0; i < grid.domains.length; i++) {
+            if (inDomain(coords, grid.domains[i])) {
+                inSet = true;
+            }
+        }
+    }
+    return inSet;
 }
 
 // Creates a block DOM object.
@@ -411,7 +488,8 @@ function makeBlock(o) {
 }
 
 // Sets the size and dimensions of the grid.
-function setGrid(size, dim) {
+function setGrid(size, gameObj) {
+    dim = gameObj.dim;
     // Set clickable area dimensions
     var s = size / 20;
     var x = .5;
@@ -428,10 +506,12 @@ function setGrid(size, dim) {
     grid.y = y;
     grid.dim = dim;
     // Make grid background
-    makeGridBG(size, dim);
+    makeGridBG(size, gameObj);
 }
 
-function makeGridBG(size, dim) {
+function makeGridBG(size, gameObj) {
+    dim = gameObj.dim;
+    var thisLevel = gameObj.levels[gameObj.currentLevel];
     $("#gridsvg").empty();
     // Dimensions
     var x = 10;
@@ -458,7 +538,21 @@ function makeGridBG(size, dim) {
         addLine(0, i, 400, i);
     }
     // Add outer box
-    $("#gridsvg").append('<rect fill="none" stroke="#808080" stroke-width="3" x="' + x + '" y="' + y + '" width="' + size + '" height="' + size + '" />');
+    if (thisLevel.hasUniversal) {
+        $("#gridsvg").append('<rect fill="none" stroke="#808080" stroke-width="3" x="' + x + '" y="' + y + '" width="' + size + '" height="' + size + '" />');
+    }
+    var domains = thisLevel.domains;
+    // Add domain boxes
+    for (var i = 0; i < domains.length; i++) {
+        var d = domains[i];
+        var dx = d.x * cellpx + x;
+        var dy = d.y * cellpx + y;
+        var dw = d.w * cellpx;
+        var dh = d.h * cellpx;
+        $("#gridsvg").append('<rect fill="none" stroke="' + domainColors[d.name] + '" stroke-width="3" x="' + dx + '" y="' + dy + '" width="' + dw + '" height="' + dh + '" />');
+        $("#gridsvg").append('<circle fill="' + domainColors[d.name] + '" stroke="none" cx="' + dx + '" cy="' + dy + '" r="' + (cellpx / 4) + '"  />');
+        $("#gridsvg").append('<text fill="#ffffff" font-family="FuturaDemi" font-size="' + (cellpx / 3) + '" text-anchor="middle" x="' + dx + '" y="' + (dy + cellpx / 9) + '">' + d.name + '</text>');
+    }
     // Refresh
     refreshElement($("#gridBG"));
 }
@@ -579,31 +673,72 @@ function jsonClone(o) {
 
 // Clear level animation
 function clearLevel() {
-    // Disable controls
-    grid.on = false;
-    // Record that the user did it
-    setUserProgress(currentUser, game.internalID, game.currentLevel + 1, game.currentLevel + 1 >= game.levels.length);
-    // Set the subtext to a random congratulatory message
-    var congrats = ["Nicely done!", "Nice work!", "Well done!", "Excellent!", "You did it!", "Spectacular!", "That's the solution!", "Incredible!"];
-    $("#gcSubtext").text(congrats[Math.floor(congrats.length * Math.random())]);
-    $(".gcColorBox").removeClass("anim_gameClearOut");
-    $(".gcColorBox").addClass("anim_gameClearIn");
-    $("#whiteBox").removeClass("anim_whiteBoxOut");
-    $("#whiteBox").addClass("anim_whiteBoxIn");
-    setTimeout(function () {
-        $(".gcColorBox").removeClass("anim_gameClearIn");
-        $(".gcColorBox").addClass("anim_gameClearOut");
-        $("#whiteBox").removeClass("anim_whiteBoxIn");
-        $("#whiteBox").addClass("anim_whiteBoxOut");
-        if (game.currentLevel < game.levels.length - 1) {
-            loadLevel(game.currentLevel + 1);
-            grid.on = true;
-        } else {
-            // Finished the set
-            returnToMenu();
-        }
-    }, 1750);
+    // If the level has not already been cleared, play the animation. Otherwise, just show the CORRECT text.
+    if (!grid.cleared && !editMode) {
+        // Disable controls
+        grid.on = false;
+        // Record that the user did it
+        setUserProgress(currentUser, game.internalID, game.currentLevel + 1, game.currentLevel + 1 >= game.levels.length);
+        $("#gameClearText").removeClass("anim_gameClearInstant");
+        $("#gameClearText").addClass("anim_gameClearIn");
+        $("#whiteBox").removeClass("anim_whiteBoxOut");
+        $("#whiteBox").addClass("anim_whiteBoxIn");
+        setTimeout(function () {
+            $("#whiteBox").removeClass("anim_whiteBoxIn");
+            $("#whiteBox").addClass("anim_whiteBoxOut");
+            grid.cleared = true;
+            saveLevelState();
+            grid.canContinue = true;
+        }, 875);
+        setTimeout(function () {
+            $("#clickToContinueText").addClass("anim_ctcIn");
+        }, 1000);
+    } else {
+        $("#gameClearText").removeClass("anim_gameClearIn");
+        $("#gameClearText").addClass("anim_gameClearInstant");
+    }
 }
+
+function levelNotCleared() {
+    $("#gameClearText").removeClass("anim_gameClearIn");
+    $("#gameClearText").removeClass("anim_gameClearInstant");
+}
+
+function nextLevel() {
+    grid.canContinue = false;
+    if (game.currentLevel < game.levels.length - 1) {
+        loadLevel(game.currentLevel + 1);
+        grid.on = true;
+    } else {
+        // Finished the set
+        returnToMenu();
+    }
+}
+
+// Handles level save states.
+
+function saveLevelState() {
+    var levelObj = jsonClone(grid.obj);
+    if (!levelStates[game.internalID]) {
+        levelStates[game.internalID] = {};
+    }
+    levelStates[game.internalID][game.currentLevel] = {
+        obj: levelObj,
+        cleared: grid.cleared
+    };
+}
+
+function loadLevelState() {
+    if (!levelStates[game.internalID]) {
+        return false;
+    }
+    if (!levelStates[game.internalID][game.currentLevel]) {
+        return false;
+    }
+    return levelStates[game.internalID][game.currentLevel];
+}
+
+// Handles user data saving.
 
 function makeNewUser(user) {
     progress[user] = {};
@@ -649,7 +784,7 @@ function setUserProgress(user, levelSet, numCleared, cleared) {
 function resetUser(user) {
     progress[user] = {};
     saveGame();
-    returnToMenu();
+    returnToMenu(false);
 }
 
 function saveGame() {

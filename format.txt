@@ -1,6 +1,6 @@
 Logic Game Level File Format
 
-Tags used: n, i, t, d, l, r, b, g, c, s, h, f, x, e
+Tags used: n, i, t, d, l, r, R, b, g, c, s, h, f, x, e
 
 !n <id>
 	Creates a new level set with the given string id (not shown to the player). So as not to interfere with data saving, these should be unique and not changed.
@@ -22,6 +22,9 @@ Tags used: n, i, t, d, l, r, b, g, c, s, h, f, x, e
 	id: The name of the region: A, B, C, etc. It's best to start with A and go in alphabetical order.
 	x, y: Coordinates of the top left square of the region.
 	w, h: The width and height of the region.
+	
+!R
+	Indicates that in the current level, no shapes may be placed outside of a set.
 	
 !b <color> <shape> <x> <y> [value] [type]
 	Adds a block with the specified properties. Add multiple blocks in the same line by delineating them with a comma and a space between each.
